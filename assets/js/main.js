@@ -52,41 +52,69 @@ function copyToClipboard(text, element) {
     });
 }
 
-/*=============== Data Counter ===============*/
-document.addEventListener('DOMContentLoaded', () => {
-    const counters = document.querySelectorAll('[data-target]');
-    counters.forEach(counter => {
-        counter.innerText = '0';
-        const updateCounter = () => {
-            const target = +counter.getAttribute('data-target');
-            const count = +counter.innerText.replace(/,/g, '').replace(/[^0-9]/g, '');
+/*=============== pixel effect ===============*/
+document.addEventListener('DOMContentLoaded', function() {
+    const pixelBreaker = document.querySelector('.pixel-breaker');
+    const pixelBreakerEnd = document.querySelector('.pixel-breaker-end');
+    const downwardPixelCount = 50; // Number of downward pixels
+    const upwardPixelCount = 750; // Number of upward pixels
+    const upwardYellowPixelCount = 750; // Number of yellow pixels in pixel-breaker-end
 
-            const increment = target / 200; // Adjust this for speed
+    // Function to create a pixel
+    function createPixel(x, y, className) {
+        const pixel = document.createElement('div');
+        pixel.classList.add('pixel', className);
+        pixel.style.left = `${x}%`;
+        pixel.style.top = `${y}px`;
+        return pixel;
+    }
 
-            if (count < target) {
-                const newCount = Math.ceil(count + increment);
-                if (counter.classList.contains('tokenomics__percentage')) {
-                    counter.innerText = newCount.toLocaleString() + '%';
-                } else if (counter.classList.contains('tokenomics__subheader-currency')) {
-                    counter.innerText = newCount.toLocaleString() + ' tokens';
-                } else {
-                    counter.innerText = newCount.toLocaleString();
-                }
-                setTimeout(updateCounter, 10); // Adjust this for speed
-            } else {
-                if (counter.classList.contains('tokenomics__percentage')) {
-                    counter.innerText = target.toLocaleString() + '%';
-                } else if (counter.classList.contains('tokenomics__subheader-currency')) {
-                    counter.innerText = target.toLocaleString() + ' tokens';
-                } else {
-                    counter.innerText = target.toLocaleString();
-                }
-            }
-        };
-        updateCounter();
-    });
+    // Function to generate weighted random y position for downward pixels
+    function getRandomYDownward() {
+        const baseY = 0; // Base Y position at the bottom of the pixel-breaker
+        const randomFactor = Math.random();
+        const y = baseY + (Math.pow(randomFactor, 4) * 600); // Quadratic distribution for higher density near base
+        return y;
+    }
+
+    // Function to generate weighted random y position for upward pixels
+    function getRandomYUpward() {
+        const baseY = 0; // Base Y position at the bottom of the pixel-breaker
+        const randomFactor = Math.random();
+        const y = baseY - (Math.pow(randomFactor, 12) * 30); // Quadratic distribution for higher density near base
+        return y;
+    }
+
+    // Function to generate weighted random y position for upward yellow pixels
+    function getRandomYUpwardYellow() {
+        const baseY = 0; // Base Y position at the bottom of the pixel-breaker-end
+        const randomFactor = Math.random();
+        const y = baseY - (Math.pow(randomFactor, 12) * 100); // Quadratic distribution for higher density near base
+        return y;
+    }
+
+    // Create downward black and yellow pixels in pixelBreaker
+    for (let i = 0; i < downwardPixelCount; i++) {
+        const x = Math.random() * 100;
+        const y = getRandomYDownward();
+        const pixelClass = i % 2 === 0 ? 'black-pixel' : 'yellow-pixel'; // Alternate classes for variety
+        const pixel = createPixel(x, y, pixelClass);
+        pixelBreaker.appendChild(pixel);
+    }
+
+    // Create upward black pixels in pixelBreaker
+    for (let i = 0; i < upwardPixelCount; i++) {
+        const x = Math.random() * 100;
+        const y = getRandomYUpward();
+        const pixel = createPixel(x, y, 'black-pixel');
+        pixelBreaker.appendChild(pixel);
+    }
+
+    // Create yellow upward pixels in pixelBreakerEnd
+    for (let i = 0; i < upwardYellowPixelCount; i++) {
+        const x = Math.random() * 100;
+        const y = getRandomYUpwardYellow();
+        const pixel = createPixel(x, y, 'yellow-pixel');
+        pixelBreakerEnd.appendChild(pixel);
+    }
 });
-
-
-
-
